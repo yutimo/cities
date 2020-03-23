@@ -4,6 +4,12 @@ import { Modal } from 'antd';
 import 'antd/dist/antd.css';
 
 export default class OverviewModal extends Component {
+  static propTypes = {
+    isOverviewModalVisible: PropTypes.bool.isRequired,
+    toggleCityOverviewModal: PropTypes.func.isRequired,
+    cityOverview: PropTypes.object.isRequired,
+  };
+
   render() {
     const {isOverviewModalVisible, toggleCityOverviewModal, cityOverview} = this.props;
 
@@ -24,9 +30,3 @@ export default class OverviewModal extends Component {
     )
   }
 }
-
-OverviewModal.propTypes = {
-  isOverviewModalVisible: PropTypes.bool,
-  toggleCityOverviewModal: PropTypes.func,
-  cityOverview: PropTypes.object,
-};

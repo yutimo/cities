@@ -26,6 +26,10 @@ class Chart extends Component {
     this.toggleCityOverviewModal = this.toggleCityOverviewModal.bind(this);
   }
 
+  static propTypes = {
+    treemap: PropTypes.array.isRequired
+  };
+
   toggleCityOverviewModal() {
     const {isOverviewModalVisible} = this.state;
 
@@ -132,10 +136,6 @@ class Chart extends Component {
     )
   }
 }
-
-Chart.propTypes = {
-  treemap: PropTypes.array
-};
 
 function mapStateToProps(state) {
   return {

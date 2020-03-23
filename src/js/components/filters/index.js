@@ -21,6 +21,11 @@ class Filters extends Component {
     this.handleMetricChange = this.handleMetricChange.bind(this);
   }
 
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    treemap: PropTypes.array.isRequired
+  };
+
   componentDidMount() {
     this.getCities();
     this.getMetrics();
@@ -117,11 +122,6 @@ class Filters extends Component {
     )
   }
 }
-
-Filters.propTypes = {
-  dispatch: PropTypes.func,
-  treemap: PropTypes.array
-};
 
 function mapStateToProps(state) {
   return {

@@ -13,8 +13,6 @@ const App = () => {
   );
 };
 
-
-
 export default App;
 
 const AppContainer = styled.div`
