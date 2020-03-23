@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
-import axios from "axios";
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import {connect} from 'react-redux'
+  ;
 import styled from 'styled-components';
 import { Select, Button } from 'antd';
-import 'antd/dist/antd.css';
+
+import loadCities from '../../api/cities/load';
+import loadMetrics from '../../api/metrics/load';
+import loadTreemap from '../../api/treemap/load';
 
 class Filters extends Component {
   constructor(props) {
@@ -12,8 +15,6 @@ class Filters extends Component {
     this.state = {
       metrics: [],
       cities: [],
-      selectedMetric: '',
-      selectedCities: []
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -23,7 +24,9 @@ class Filters extends Component {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    treemap: PropTypes.array.isRequired
+    treemap: PropTypes.array.isRequired,
+    selectedCities: PropTypes.array,
+    selectedMetric: PropTypes.string
   };
 
   componentDidMount() {
@@ -32,8 +35,7 @@ class Filters extends Component {
   }
 
   getCities() {
-    axios
-      .get('/classifiers/cities')
+    loadCities()
       .then(data => this.setState({cities: data.data}))
       .catch(err => {
         console.log(err); // eslint-disable-line
@@ -42,8 +44,7 @@ class Filters extends Component {
   }
 
   getMetrics() {
-    axios
-      .get('/classifiers/metrics')
+    loadMetrics()
       .then(data => this.setState({metrics: data.data}))
       .catch(err => {
         console.log(err); // eslint-disable-line
@@ -52,36 +53,30 @@ class Filters extends Component {
   }
 
   handleSubmit(event) {
-    const {dispatch} = this.props;
-    const {selectedMetric, selectedCities} = this.state;
+    const {dispatch, selectedCities, selectedMetric} = this.props;
 
-    axios
-      .get('/chart/treemap', {
-        params: {
-          cities: selectedCities,
-          metric: selectedMetric
-        }
-      })
+    loadTreemap(selectedCities, selectedMetric)
       .then(response => {
         dispatch({type: 'CHART/TREEMAP/GET/SUCCESS', payload: response.data});
       })
       .catch(error => {
         dispatch({type: 'CHART/TREEMAP/GET/ERROR', payload: error.message});
+        dispatch({type: 'SELECTEDMETRIC/GET/ERROR', payload: error.message});
       });
 
     event.preventDefault();
   }
 
   handleCitiesChange(value) {
-    this.setState({
-      selectedCities: value
-    });
+    const {dispatch} = this.props;
+
+    dispatch({type: 'SELECTEDCITIES/GET/SUCCESS', payload: value});
   }
 
   handleMetricChange(value) {
-    this.setState({
-      selectedMetric: value
-    });
+    const {dispatch} = this.props;
+
+    dispatch({type: 'SELECTEDMETRIC/GET/SUCCESS', payload: value});
   }
 
   render() {
@@ -126,6 +121,8 @@ class Filters extends Component {
 function mapStateToProps(state) {
   return {
     treemap: state.treemap.list.data,
+    selectedCities: state.selectedCities.list.data,
+    selectedMetric: state.selectedMetric.list.data
   }
 }
 

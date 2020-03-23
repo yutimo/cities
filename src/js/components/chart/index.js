@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import axios from "axios";
+
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import addTreemapModule from 'highcharts/modules/treemap';
 import addHeatmapModule from 'highcharts/modules/heatmap';
+
+import cityOverview from '../../api/cityOverview/load';
 
 import OverviewModal from '../overviewModal';
 
@@ -80,8 +82,7 @@ class Chart extends Component {
         }],
         events: {
           click: function (event) {
-            axios
-              .get(`/cities/${event.point.id}/overview`)
+            cityOverview(event.point.id)
               .then(data => {
                 self.setState({cityOverview: data.data,});
               })

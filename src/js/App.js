@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import 'antd/dist/antd.css';
 
 import Filters from '../js/components/filters';
 import Chart from '../js/components/chart';
