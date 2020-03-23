@@ -132,12 +132,10 @@ class Chart extends Component {
     };
 
     return (
-      <div>
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={options}
-        />
-      </div>
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={options}
+      />
     )
   }
 }

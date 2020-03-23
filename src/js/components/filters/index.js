@@ -20,6 +20,7 @@ class Filters extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleCitiesChange = this.handleCitiesChange.bind(this);
     this.handleMetricChange = this.handleMetricChange.bind(this);
+    this.getOptGroups = this.getOptGroups.bind(this);
   }
 
   static propTypes = {
@@ -52,7 +53,7 @@ class Filters extends Component {
       });
   }
 
-  handleSubmit(event) {
+  handleSubmit() {
     const {dispatch, selectedCities, selectedMetric} = this.props;
 
     loadTreemap(selectedCities, selectedMetric)
@@ -61,10 +62,7 @@ class Filters extends Component {
       })
       .catch(error => {
         dispatch({type: 'CHART/TREEMAP/GET/ERROR', payload: error.message});
-        dispatch({type: 'SELECTEDMETRIC/GET/ERROR', payload: error.message});
       });
-
-    event.preventDefault();
   }
 
   handleCitiesChange(value) {
@@ -79,10 +77,41 @@ class Filters extends Component {
     dispatch({type: 'SELECTEDMETRIC/GET/SUCCESS', payload: value});
   }
 
-  render() {
-    const {cities, metrics} = this.state;
+  getOptGroups() {
+    const { metrics } = this.state;
+    const { Option, OptGroup } = Select;
+    let optGroups = new Set(); // eslint-disable-line
 
-    const Option = Select.Option;
+    metrics.forEach(item => {
+      optGroups.add(item.optgroup);
+    });
+
+    return Array.from(optGroups).map(optGroup => {
+      const options = metrics.filter(item => item.optgroup === optGroup);
+
+      return (
+        <OptGroup
+          label={optGroup}
+          key={optGroup}
+        >
+          {
+            options.map(item => {
+              return (
+                <Option key={item.id}>
+                  {item.ru}
+                </Option>
+              )
+            })
+          }
+        </OptGroup>
+      )
+    })
+  }
+
+  render() {
+    const { cities } = this.state;
+
+    const { Option } = Select;
 
     return (
       <FiltersBlock>
@@ -126,11 +155,7 @@ class Filters extends Component {
                   placeholder="Метрики"
                   onChange={this.handleMetricChange}
                 >
-                  {
-                    metrics.map(item => {
-                      return <Option key={item.id} value={item.ru}>{item.ru}</Option>
-                    })
-                  }
+                  {this.getOptGroups()}
                 </Select>
               </Form.Item>
             </Col>
