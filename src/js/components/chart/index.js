@@ -7,9 +7,9 @@ import HighchartsReact from 'highcharts-react-official';
 import addTreemapModule from 'highcharts/modules/treemap';
 import addHeatmapModule from 'highcharts/modules/heatmap';
 
-import cityOverview from '../../api/cityOverview/load';
+import { Modal } from 'antd';
 
-import OverviewModal from '../overviewModal';
+import cityOverview from '../../api/cityOverview/load';
 
 addTreemapModule(Highcharts);
 addHeatmapModule(Highcharts);
@@ -21,11 +21,8 @@ class Chart extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      cityOverview: {},
-      isOverviewModalVisible: false
+      cityOverview: {}
     };
-
-    this.toggleCityOverviewModal = this.toggleCityOverviewModal.bind(this);
   }
 
   static propTypes = {
@@ -33,9 +30,22 @@ class Chart extends Component {
   };
 
   toggleCityOverviewModal() {
-    const {isOverviewModalVisible} = this.state;
+    const {cityOverview} = this.state;
 
-    this.setState({isOverviewModalVisible: !isOverviewModalVisible})
+    Modal.info({
+      title: cityOverview.id,
+      content: (
+        <div>
+          <div>
+            Заказы: {cityOverview.orders_volume}
+          </div>
+          <div>
+            Сгоревшие: {cityOverview.burned}
+          </div>
+        </div>
+      ),
+      onOk() {},
+    });
   }
 
   render() {
@@ -86,12 +96,11 @@ class Chart extends Component {
               .then(data => {
                 self.setState({cityOverview: data.data,});
               })
+              .then(() => self.toggleCityOverviewModal())
               .catch(err => {
                 console.log(err); // eslint-disable-line
                 return null;
               });
-
-            self.toggleCityOverviewModal();
           }
         },
         data: cities
@@ -127,11 +136,6 @@ class Chart extends Component {
         <HighchartsReact
           highcharts={Highcharts}
           options={options}
-        />
-        <OverviewModal
-          isOverviewModalVisible={this.state.isOverviewModalVisible}
-          toggleCityOverviewModal={this.toggleCityOverviewModal}
-          cityOverview={this.state.cityOverview}
         />
       </div>
     )
