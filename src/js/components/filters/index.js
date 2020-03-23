@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux'
   ;
 import styled from 'styled-components';
-import { Select, Button } from 'antd';
+import { Row, Col, Form, Select, Button } from 'antd';
 
 import loadCities from '../../api/cities/load';
 import loadMetrics from '../../api/metrics/load';
@@ -81,38 +81,68 @@ class Filters extends Component {
 
   render() {
     const {cities, metrics} = this.state;
+
     const Option = Select.Option;
 
     return (
       <FiltersBlock>
-        <form onSubmit={this.handleSubmit}>
-          <Select
-            mode="multiple"
-            style={{ width: '30%' }}
-            placeholder="Города"
-            onChange={this.handleCitiesChange}
-          >
-            {
-              cities.map(item => {
-                return <Option key={item.id} value={item.ru}>{item.ru}</Option>
-              })
-            }
-          </Select>
-          <Select
-            style={{ width: '30%' }}
-            placeholder="Метрики"
-            onChange={this.handleMetricChange}
-          >
-            {
-              metrics.map(item => {
-                return <Option key={item.id} value={item.ru}>{item.ru}</Option>
-              })
-            }
-          </Select>
-          <Button type='primary' htmlType='submit'>
-            Обновить
-          </Button>
-        </form>
+        <Form
+          onFinish={this.handleSubmit}
+          layout='inline'
+        >
+          <Row style={{ width: '100%' }}>
+            <Col span={8}>
+              <Form.Item
+                rules={[
+                  {
+                    required: true,
+                    message: 'Выбери город',
+                  },
+                ]}
+              >
+                <Select
+                  mode="multiple"
+                  placeholder="Города"
+                  onChange={this.handleCitiesChange}
+                >
+                  {
+                    cities.map(item => {
+                      return <Option key={item.id} value={item.ru}>{item.ru}</Option>
+                    })
+                  }
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                rules={[
+                  {
+                    required: true,
+                    message: 'Выбери метрику',
+                  },
+                ]}
+              >
+                <Select
+                  placeholder="Метрики"
+                  onChange={this.handleMetricChange}
+                >
+                  {
+                    metrics.map(item => {
+                      return <Option key={item.id} value={item.ru}>{item.ru}</Option>
+                    })
+                  }
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item>
+                <Button type='primary' htmlType='submit'>
+                  Обновить
+                </Button>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
       </FiltersBlock>
     )
   }
