@@ -11,6 +11,8 @@ import { Modal } from 'antd';
 
 import cityOverview from '../../api/cityOverview/load';
 
+import { createSelector } from 'reselect';
+
 addTreemapModule(Highcharts);
 addHeatmapModule(Highcharts);
 
@@ -50,16 +52,22 @@ class Chart extends Component {
 
   render() {
     const self = this;
+    const {treemap} = this.props;
 
-    const cities = this.props.treemap.map((item, index) => {
-      return {
-        id: item.city,
-        name: item.city,
-        value: item.present,
-        past: item.past,
-        colorValue: index + 1,
-      }
-    });
+    const citiesSelector = state => state;
+
+    const treemapCitiesSelector = createSelector(
+      citiesSelector,
+      items => items.map((item, index) => {
+        return {
+          id: item.city,
+          name: item.city,
+          value: item.present,
+          past: item.past,
+          colorValue: index + 1,
+        }
+      })
+    );
 
     const options = {
       chart: {
@@ -103,7 +111,7 @@ class Chart extends Component {
               });
           }
         },
-        data: cities
+        data: treemapCitiesSelector(treemap)
       }],
       plotOptions: {
         series: {
