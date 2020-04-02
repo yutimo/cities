@@ -1,10 +1,9 @@
 import { combineReducers } from 'redux';
-import treemap from './treemap';
-import selectedCities from './selectedCities';
-import selectedMetric from './selectedMetric';
+
+import resources from './resources';
+import pages from './pages';
 
 export default combineReducers({
-  treemap,
-  selectedCities,
-  selectedMetric
+  resources,
+  pages
 });

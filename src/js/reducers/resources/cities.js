@@ -1,6 +1,6 @@
 const defaultState = {
   list: {
-    data: '',
+    data: [],
     status: null,
     description: null
   },
@@ -9,7 +9,7 @@ const defaultState = {
 
 export default function(state = defaultState, action) {
   switch (action.type) {
-    case 'SELECTEDMETRIC/GET/PENDING':
+    case 'RESOURCES/CITIES/GET/PENDING':
       return {
         ...state,
         list: {
@@ -17,7 +17,7 @@ export default function(state = defaultState, action) {
           status: 'pending'
         }
       };
-    case 'SELECTEDMETRIC/GET/SUCCESS':
+    case 'RESOURCES/CITIES/GET/SUCCESS':
       return {
         ...state,
         list: {
@@ -27,7 +27,7 @@ export default function(state = defaultState, action) {
           description: null
         }
       };
-    case 'SELECTEDMETRIC/GET/ERROR':
+    case 'RESOURCES/CITIES/GET/ERROR':
       return {
         ...state,
         list: {

@@ -5,17 +5,11 @@ import {connect} from 'react-redux'
 import styled from 'styled-components';
 import { Row, Col, Form, Select, Button } from 'antd';
 
-import loadCities from '../../api/cities/load';
-import loadMetrics from '../../api/metrics/load';
 import loadTreemap from '../../api/treemap/load';
 
 class Filters extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      metrics: [],
-      cities: [],
-    };
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleCitiesChange = this.handleCitiesChange.bind(this);
@@ -25,9 +19,10 @@ class Filters extends Component {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    treemap: PropTypes.array.isRequired,
     selectedCities: PropTypes.array,
-    selectedMetric: PropTypes.string
+    selectedMetric: PropTypes.string,
+    cities: PropTypes.array,
+    metrics: PropTypes.array
   };
 
   componentDidMount() {
@@ -36,49 +31,37 @@ class Filters extends Component {
   }
 
   getCities() {
-    loadCities()
-      .then(data => this.setState({cities: data.data}))
-      .catch(err => {
-        console.log(err); // eslint-disable-line
-        return null;
-      });
+    const {dispatch} = this.props;
+
+    dispatch({type: 'RESOURCES/CITIES/GET/PENDING'});
   }
 
   getMetrics() {
-    loadMetrics()
-      .then(data => this.setState({metrics: data.data}))
-      .catch(err => {
-        console.log(err); // eslint-disable-line
-        return null;
-      });
+    const {dispatch} = this.props;
+
+    dispatch({type: 'RESOURCES/METRICS/GET/PENDING'});
   }
 
   handleSubmit() {
-    const {dispatch, selectedCities, selectedMetric} = this.props;
+    const {dispatch} = this.props;
 
-    loadTreemap(selectedCities, selectedMetric)
-      .then(response => {
-        dispatch({type: 'CHART/TREEMAP/GET/SUCCESS', payload: response.data});
-      })
-      .catch(error => {
-        dispatch({type: 'CHART/TREEMAP/GET/ERROR', payload: error.message});
-      });
+    dispatch({type: 'TREEMAP/CHART/GET/PENDING'});
   }
 
   handleCitiesChange(value) {
     const {dispatch} = this.props;
 
-    dispatch({type: 'SELECTEDCITIES/GET/SUCCESS', payload: value});
+    dispatch({type: 'TREEMAP/UI/FILTERS/PATCH', payload: {field: 'selectedCities', value}});
   }
 
   handleMetricChange(value) {
     const {dispatch} = this.props;
 
-    dispatch({type: 'SELECTEDMETRIC/GET/SUCCESS', payload: value});
+    dispatch({type: 'TREEMAP/UI/FILTERS/PATCH', payload: {field: 'selectedMetric', value}});
   }
 
   getOptGroups() {
-    const { metrics } = this.state;
+    const { metrics } = this.props;
     const { Option, OptGroup } = Select;
     let optGroups = new Set(); // eslint-disable-line
 
@@ -109,7 +92,7 @@ class Filters extends Component {
   }
 
   render() {
-    const { cities } = this.state;
+    const { cities } = this.props;
 
     const { Option } = Select;
 
@@ -175,9 +158,10 @@ class Filters extends Component {
 
 function mapStateToProps(state) {
   return {
-    treemap: state.treemap.list.data,
-    selectedCities: state.selectedCities.list.data,
-    selectedMetric: state.selectedMetric.list.data
+    selectedCities: state.pages.treemap.ui.filters.selectedCities,
+    selectedMetric: state.pages.treemap.ui.filters.selectedMetric,
+    cities: state.resources.cities.list.data,
+    metrics: state.resources.metrics.list.data
   }
 }
 

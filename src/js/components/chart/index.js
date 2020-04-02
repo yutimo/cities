@@ -11,7 +11,7 @@ import { Modal } from 'antd';
 
 import cityOverview from '../../api/cityOverview/load';
 
-import { createSelector } from 'reselect';
+import treemapCitiesSelector from '../../selectors/treemapCitiesSelector';
 
 addTreemapModule(Highcharts);
 addHeatmapModule(Highcharts);
@@ -28,7 +28,8 @@ class Chart extends Component {
   }
 
   static propTypes = {
-    treemap: PropTypes.array.isRequired
+    treemapCities: PropTypes.array.isRequired,
+    treemapChartStatus: PropTypes.string
   };
 
   toggleCityOverviewModal() {
@@ -52,22 +53,17 @@ class Chart extends Component {
 
   render() {
     const self = this;
-    const {treemap} = this.props;
+    const {treemapCities, treemapChartStatus} = this.props;
 
-    const citiesSelector = state => state;
+    if (treemapChartStatus === 'pending') {
+      return (
+        <div>
+          awesome loader
+        </div>
+      );
+    }
 
-    const treemapCitiesSelector = createSelector(
-      citiesSelector,
-      items => items.map((item, index) => {
-        return {
-          id: item.city,
-          name: item.city,
-          value: item.present,
-          past: item.past,
-          colorValue: index + 1,
-        }
-      })
-    );
+    console.log(treemapCities)
 
     const options = {
       chart: {
@@ -78,7 +74,9 @@ class Chart extends Component {
       },
       colorAxis: {
         minColor: '#fff',
-        maxColor: Highcharts.getOptions().colors[7]
+        maxColor: Highcharts.getOptions().colors[7],
+        min: 0,
+        max: treemapCities.length
       },
       legend: {
         enabled: false,
@@ -111,7 +109,7 @@ class Chart extends Component {
               });
           }
         },
-        data: treemapCitiesSelector(treemap)
+        data: treemapCities
       }],
       plotOptions: {
         series: {
@@ -150,7 +148,8 @@ class Chart extends Component {
 
 function mapStateToProps(state) {
   return {
-    treemap: state.treemap.list.data,
+    treemapCities: treemapCitiesSelector(state),
+    treemapChartStatus: state.pages.treemap.chart.status
   }
 }
 
